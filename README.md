@@ -36,56 +36,26 @@ data.
 
 ------------------------------------------------------------------------
 
-## Architecture Overview
-
-        End User
+  User Interface (Streamlit)
             │
             ▼
-    User Interface (Streamlit)
-        • Chat Interface
-        • Document Upload (PDF, TXT)
-        • Session Management
+    FastAPI Backend API
             │
             ▼
-      FastAPI Backend API
-        • POST /rag/query
-        • POST /rag/documents/upload
+    LangGraph Agent Workflow
             │
             ▼
-     LangGraph Agent Workflow
-        • Analyze Query
-        • Classify Intent
-        • Route Request
-        • Execute Pipeline
-            │
-            ▼
-      Query Routing Decision
+    Query Classification
             │
      ┌───────────────┬───────────────┬───────────────┐
-     │   RAG Pipeline│  General LLM  │   Web Search  │
-     │ (Indexed Docs)│   Pipeline    │   Pipeline    │
+     │ Indexed Docs  │ General LLM   │ Web Search    │
      └───────────────┴───────────────┴───────────────┘
-            │               │               │
-            ▼               ▼               ▼
-   Document Retrieval   Direct LLM      Tavily Search
-   Vector Search        Response        Search Results
-   Relevance Grading
-   Query Rewriting
-            │               │               │
-            └───────────────┴───────────────┘
-                        │
-                        ▼
-              Response Generation
-                        │
-                        ▼
-              Final Answer to User
-
-
-Supporting Infrastructure
-
-Qdrant Vector Database  →  Document Embeddings & Similarity Search  
-MongoDB Memory Store    →  Chat History & Session Context
-+------------------------+                           +-----------------------------+
+            │
+            ▼
+    Response Generation
+            │
+            ▼
+    Answer returned to user
 
 # Key Features
 
