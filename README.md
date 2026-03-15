@@ -38,71 +38,53 @@ data.
 
 ## Architecture Overview
 
-```text
-+----------------------------------------------------------------------------------+
-|                                  END USER                                        |
-+----------------------------------------------------------------------------------+
-                                         |
-                                         v
-+----------------------------------------------------------------------------------+
-|                             STREAMLIT FRONTEND                                   |
-|----------------------------------------------------------------------------------|
-|  • Chat UI                                                                       |
-|  • Document Upload                                                               |
-|  • Session Handling                                                              |
-+----------------------------------------------------------------------------------+
-                                         |
-                                         v
-+----------------------------------------------------------------------------------+
-|                               FASTAPI BACKEND                                    |
-|----------------------------------------------------------------------------------|
-|  • Query API                                                                     |
-|  • Document Upload API                                                           |
-|  • Response Handling                                                             |
-+----------------------------------------------------------------------------------+
-                                         |
-                                         v
-+----------------------------------------------------------------------------------+
-|                          LANGGRAPH WORKFLOW ENGINE                               |
-|----------------------------------------------------------------------------------|
-|  1. Analyze Query                                                                |
-|  2. Classify Intent                                                              |
-|  3. Route Request                                                                |
-|  4. Execute Pipeline                                                             |
-+----------------------------------------------------------------------------------+
-                                         |
-          +------------------------------+-----------------------------+
-          |                              |                             |
-          v                              v                             v
-+---------------------------+  +------------------------+  +------------------------+
-|       RAG PIPELINE        |  |   GENERAL LLM PIPELINE |  |   WEB SEARCH PIPELINE  |
-+---------------------------+  +------------------------+  +------------------------+
-| • Chunked Retrieval       |  | • Direct LLM Response  |  | • Tavily Search        |
-| • Vector Similarity       |  +------------------------+  | • Search Synthesis     |
-| • Relevance Grading       |                              +------------------------+
-| • Query Rewrite           |
-| • Answer Generation       |
-+---------------------------+
-          |                              |                             |
-          +------------------------------+-----------------------------+
-                                         |
-                                         v
-+----------------------------------------------------------------------------------+
-|                           UNIFIED RESPONSE GENERATOR                             |
-+----------------------------------------------------------------------------------+
-                                         |
-                                         v
-+----------------------------------------------------------------------------------+
-|                              FINAL ANSWER TO USER                                |
-+----------------------------------------------------------------------------------+
+        End User
+            │
+            ▼
+    User Interface (Streamlit)
+        • Chat Interface
+        • Document Upload (PDF, TXT)
+        • Session Management
+            │
+            ▼
+      FastAPI Backend API
+        • POST /rag/query
+        • POST /rag/documents/upload
+            │
+            ▼
+     LangGraph Agent Workflow
+        • Analyze Query
+        • Classify Intent
+        • Route Request
+        • Execute Pipeline
+            │
+            ▼
+      Query Routing Decision
+            │
+     ┌───────────────┬───────────────┬───────────────┐
+     │   RAG Pipeline│  General LLM  │   Web Search  │
+     │ (Indexed Docs)│   Pipeline    │   Pipeline    │
+     └───────────────┴───────────────┴───────────────┘
+            │               │               │
+            ▼               ▼               ▼
+   Document Retrieval   Direct LLM      Tavily Search
+   Vector Search        Response        Search Results
+   Relevance Grading
+   Query Rewriting
+            │               │               │
+            └───────────────┴───────────────┘
+                        │
+                        ▼
+              Response Generation
+                        │
+                        ▼
+              Final Answer to User
 
 
-+------------------------+                           +-----------------------------+
-|      QDRANT DB         |-------------------------->|   Vector Similarity Search  |
-+------------------------+                           +-----------------------------+
+Supporting Infrastructure
 
-+------------------------+                           +-----------------------------+
-|     MONGODB MEMORY     |-------------------------->| Unified Response Generator  |
+Qdrant Vector Database  →  Document Embeddings & Similarity Search  
+MongoDB Memory Store    →  Chat History & Session Context
 +------------------------+                           +-----------------------------+
 
 # Key Features
