@@ -18,19 +18,7 @@ data.
 
 ------------------------------------------------------------------------
 
-# Demo
 
-## Chat Interface
-
-![Chat Interface](docs/screenshots/chat_ui.png)
-
-## Document Upload
-
-![Upload](docs/screenshots/upload_ui.png)
-
-## RAG Workflow
-
-![Architecture](adaptive_RAG.png)
 
 ------------------------------------------------------------------------
 
@@ -48,30 +36,80 @@ data.
 
 ------------------------------------------------------------------------
 
-# System Architecture
+## Architecture Overview
 
-    User Interface (Streamlit)
-            │
-            ▼
-    FastAPI Backend API
-            │
-            ▼
-    LangGraph Agent Workflow
-            │
-            ▼
-    Query Classification
-            │
-     ┌───────────────┬───────────────┬───────────────┐
-     │ Indexed Docs  │ General LLM   │ Web Search    │
-     └───────────────┴───────────────┴───────────────┘
-            │
-            ▼
-    Response Generation
-            │
-            ▼
-    Answer returned to user
 
-------------------------------------------------------------------------
+flowchart TB
+    U[End User] --> S[Streamlit Frontend]
+
+    subgraph FRONTEND[Frontend Layer]
+        S1[Chat UI]
+        S2[Document Upload]
+        S3[Session Handling]
+    end
+
+    S --> S1
+    S --> S2
+    S --> S3
+
+    S --> A[FastAPI Backend]
+
+    subgraph BACKEND[Backend Services]
+        A1[Query API]
+        A2[Document Upload API]
+        A3[Response Handling]
+    end
+
+    A --> A1
+    A --> A2
+    A --> A3
+
+    A --> L[LangGraph Workflow Engine]
+
+    subgraph ORCHESTRATION[Agentic Orchestration]
+        L1[Analyze Query]
+        L2[Classify Intent]
+        L3[Route Request]
+        L4[Execute Pipeline]
+    end
+
+    L --> L1 --> L2 --> L3 --> L4
+
+    L4 --> P1[RAG Pipeline]
+    L4 --> P2[General LLM Pipeline]
+    L4 --> P3[Web Search Pipeline]
+
+    subgraph RAGPIPE[RAG Processing]
+        R1[Chunked Document Retrieval]
+        R2[Vector Similarity Search]
+        R3[Relevance Grading]
+        R4[Query Rewrite]
+        R5[Answer Generation]
+    end
+
+    P1 --> R1 --> R2 --> R3 --> R4 --> R5
+
+    subgraph GENPIPE[General Reasoning]
+        G1[Direct LLM Response]
+    end
+
+    P2 --> G1
+
+    subgraph SEARCHPIPE[Real-Time Search]
+        W1[Tavily Search]
+        W2[Search Result Synthesis]
+    end
+
+    P3 --> W1 --> W2
+
+    R5 --> O[Unified Response Generator]
+    G1 --> O
+    W2 --> O
+
+    O --> RSP[Final Answer to User]
+
+    Q[(Qdrant)] --> R2
+    M[(MongoDB)] --> O
 
 # Key Features
 
