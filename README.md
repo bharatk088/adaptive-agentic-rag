@@ -36,7 +36,9 @@ data.
 
 ------------------------------------------------------------------------
 
-  User Interface (Streamlit)
+# System Architecture
+
+    User Interface (Streamlit)
             │
             ▼
     FastAPI Backend API
@@ -56,6 +58,9 @@ data.
             │
             ▼
     Answer returned to user
+
+------------------------------------------------------------------------
+
 
 # Key Features
 
