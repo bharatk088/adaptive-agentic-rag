@@ -38,26 +38,51 @@ data.
 
 # System Architecture
 
-    User Interface (Streamlit)
-            │
-            ▼
-    FastAPI Backend API
-            │
-            ▼
-    LangGraph Agent Workflow
-            │
-            ▼
-    Query Classification
-            │
-     ┌───────────────┬───────────────┬───────────────┐
-     │ Indexed Docs  │ General LLM   │ Web Search    │
-     └───────────────┴───────────────┴───────────────┘
-            │
-            ▼
-    Response Generation
-            │
-            ▼
-    Answer returned to user
+
+```text
+                                  END USER
+                                     │
+                                     ▼
+                           STREAMLIT FRONTEND
+                    • Chat UI • Document Upload • Session Handling
+                                     │
+                                     ▼
+                              FASTAPI BACKEND
+              • Query API • Document Upload API • Response Handling
+                                     │
+                                     ▼
+                         LANGGRAPH WORKFLOW ENGINE
+          • Analyze Query • Classify Intent • Route Request • Execute Pipeline
+                                     │
+                                     ▼
+                         ┌─────────────────────────────┐
+                         │     QUERY ROUTING LAYER     │
+                         └─────────────────────────────┘
+                                     │
+          ┌──────────────────────────┼──────────────────────────┐
+          │                          │                          │
+          ▼                          ▼                          ▼
+   ┌────────────────┐         ┌────────────────┐        ┌────────────────┐
+   │  RAG PIPELINE  │         │  GENERAL LLM   │        │   WEB SEARCH   │
+   └────────────────┘         └────────────────┘        └────────────────┘
+   • Chunked Retrieval        • Direct LLM Response     • Tavily Search
+   • Vector Similarity                                     • Search Synthesis
+   • Relevance Grading
+   • Query Rewrite
+   • Answer Generation
+          │                          │                          │
+          └──────────────────────────┴──────────────────────────┘
+                                     │
+                                     ▼
+                        UNIFIED RESPONSE GENERATOR
+                                     │
+                                     ▼
+                           FINAL ANSWER TO USER
+
+
+   QDRANT DB  ─────────────────────▶  Vector Similarity Search
+   MONGODB    ─────────────────────▶  Chat History / Session Memory
+```
 
 ------------------------------------------------------------------------
 
